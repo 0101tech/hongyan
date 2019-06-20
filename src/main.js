@@ -15,7 +15,7 @@ router.beforeEach((to, from, next) => {
   //   document.title = '鸿雁-' + to.meta.title
   // }
   next();
-})
+});
 
 new Vue({
   router,

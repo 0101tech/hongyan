@@ -1,6 +1,6 @@
 <template>
-  <div class="personal">
-    <van-nav-bar title="我的" />
+  <div class="play">
+    <van-nav-bar title="好玩" />
   </div>
 </template>
 

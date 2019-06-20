@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "./views/Home.vue";
+import Detail from "./views/Detail.vue";
 
 Vue.use(Router);
 
@@ -13,7 +14,15 @@ export default new Router({
       name: "home",
       component: Home,
       meta: {
-        title: '鸿雁'
+        title: "鸿雁"
+      }
+    },
+    {
+      path: "/detail/:id",
+      name: "detail",
+      component: Detail,
+      meta: {
+        title: "鸿雁"
       }
     },
     {
