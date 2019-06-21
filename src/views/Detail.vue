@@ -8,7 +8,7 @@
         @click-left="back"
         @click-right="more"
       >
-        <van-icon name="more-o" slot="right" />
+        <van-icon name="ellipsis" slot="right" />
       </van-nav-bar>
       <van-action-sheet
         v-model="showMore"
@@ -23,69 +23,21 @@
         <div class="author">{{ poetry.dynasty }} · {{ poetry.authorName }}</div>
         <div class="content" v-html="poetry.content"></div>
       </div>
-      <div class="cover">
-      </div>
+      <div class="cover"></div>
     </div>
-    <van-tabs value="0" sticky animated swipeable class="other">
-      <van-tab>
-        <div slot="title">
-          <van-icon name="like-o" /> {{poetry.likeCount}}
-        </div>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-        <p>哈哈哈哈</p>
-      </van-tab>
-      <van-tab>
-        <div slot="title">
-          <van-icon name="chat-o" /> {{poetry.commentCount}}
-        </div>
-        内容 2
-      </van-tab>
-      <van-tab>
-        <div slot="title">
-          <van-icon name="star-o" /> {{poetry.favoriteCount}}
-        </div>
-        内容 3
-      </van-tab>
-      <van-tab disabled>
-        <div slot="title">
-          <van-icon name="eye-o" /> {{poetry.readCount}}
-        </div>
-        内容 4
-      </van-tab>
-    </van-tabs>
+    <comment
+      :like-count="poetry.likeCount"
+      :comment-count="poetry.commentCount"
+      :favorite-count="poetry.favoriteCount"
+      :read-count="poetry.readCount"
+      :poetry-id="poetry.id"
+    />
   </div>
 </template>
 
 <script>
 import marked from "marked";
+import Comment from "@/components/Comment";
 
 export default {
   data() {
@@ -100,12 +52,15 @@ export default {
         dynasty: "唐",
         readCount: 100,
         likeCount: 100,
-        commentCount: 100,
+        commentCount: 60000,
         favoriteCount: 100
       },
       showMore: false,
       moreActions: [{ name: "分享" }, { name: "收藏" }]
     };
+  },
+  components: {
+    Comment
   },
   methods: {
     back() {
@@ -122,10 +77,9 @@ export default {
   },
   mounted() {
     marked.setOptions({
-        renderer: new marked.Renderer(),
-        breaks: true
-      }
-    );
+      renderer: new marked.Renderer(),
+      breaks: true
+    });
     this.poetry.content = marked(this.poetry.content);
   }
 };
@@ -148,7 +102,7 @@ export default {
       bottom: 0;
       left: 0;
       right: 0;
-      background-color:#000;
+      background-color: #000;
       opacity: 0.6;
     }
 
@@ -160,7 +114,7 @@ export default {
       left: 0;
       right: 0;
       text-align: center;
-      color: #FFF;
+      color: #fff;
       padding: 24px 12px 12px;
 
       .title {
@@ -171,7 +125,7 @@ export default {
       .author {
         font-size: 12px;
         line-height: 24px;
-        color: #FAFAFA;
+        color: #fafafa;
       }
       .content {
         font-size: 14px;
@@ -179,9 +133,6 @@ export default {
         font-weight: 500;
       }
     }
-  }
-  .other {
-    min-height: 100vh;
   }
 }
 </style>

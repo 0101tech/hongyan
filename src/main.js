@@ -4,10 +4,19 @@ import Vant from "vant";
 import "vant/lib/index.css";
 import router from "./router";
 import store from "./store";
+import { formatCount } from "./utils/numberUtil";
+import { timestampFormat } from "./utils/moment";
 
 Vue.config.productionTip = false;
 
 Vue.use(Vant);
+
+Vue.filter("formatCount", function(value) {
+  return formatCount(value);
+});
+Vue.filter("timestampFormat", function(value) {
+  return timestampFormat(value);
+});
 
 router.beforeEach((to, from, next) => {
   /*路由发生改变修改页面的title */

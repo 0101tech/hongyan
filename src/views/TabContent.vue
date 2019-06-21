@@ -35,23 +35,27 @@
           <span class="tips-item">
             <van-icon name="like-o" />
             <span class="count">
-              {{item.likeCount}}
-            </span></span>
-          <span class="tips-item"
-            ><van-icon name="chat-o" /><span class="count">{{
-              item.commentCount
-            }}</span></span
+              {{ item.likeCount | formatCount }}
+            </span></span
           >
-          <span class="tips-item"
-            ><van-icon name="star-o" /><span class="count">{{
-              item.favoriteCount
-            }}</span></span
-          >
-          <span class="tips-item"
-            ><van-icon name="eye-o" /><span class="count">{{
-              item.readCount
-            }}</span></span
-          >
+          <span class="tips-item">
+            <van-icon name="chat-o" />
+            <span class="count">
+              {{ item.commentCount | formatCount }}
+            </span>
+          </span>
+          <span class="tips-item">
+            <van-icon name="star-o" />
+            <span class="count">
+              {{ item.favoriteCount | formatCount }}
+            </span>
+          </span>
+          <span class="tips-item">
+            <van-icon name="eye-o" />
+            <span class="count">
+              {{ item.readCount | formatCount }}
+            </span>
+          </span>
         </div>
       </div>
     </van-list>
