@@ -1,17 +1,9 @@
 <template>
   <div class="home">
-    <template v-if="activeTabbar == 'discover'">
-      <discover />
-    </template>
-    <template v-if="activeTabbar == 'search'">
-      <search />
-    </template>
-    <template v-if="activeTabbar == 'play'">
-      <play />
-    </template>
-    <template v-if="activeTabbar == 'user'">
-      <personal />
-    </template>
+    <discover v-show="activeTabbar == 'discover'" />
+    <search v-show="activeTabbar == 'search'" />
+    <play v-show="activeTabbar == 'play'" />
+    <personal v-show="activeTabbar == 'user'" />
 
     <van-tabbar v-model="activeTabbar">
       <van-tabbar-item name="discover" icon="home-o">发现</van-tabbar-item>
