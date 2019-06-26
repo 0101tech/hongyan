@@ -1,5 +1,5 @@
 <template>
-  <van-tabs value="0" sticky animated swipeable class="comments">
+  <van-tabs value="0" sticky animated swipeable :offset-top="offsetTop" class="comments">
     <van-tab>
       <div slot="title">
         评论 <span class="count">{{ commentCount | formatCount }}</span>
@@ -82,12 +82,15 @@ export default {
     return {
       likes: [],
       comments: [],
-      favorites: []
+      favorites: [],
+      offsetTop: 46
     };
   },
   props: ["likeCount", "commentCount", "favoriteCount", "readCount"],
   methods: {},
   mounted() {
+    this.offsetTop = document.documentElement.clientWidth * this.offsetTop /375;
+
     for (var i = 0; i < 20; i++) {
       this.likes.push({
         id: i + 1,
@@ -152,13 +155,13 @@ export default {
         margin-left: 6px;
         flex: 1;
         display: flex;
-        flex-direction: column;
-        justify-content: center;
+        align-items: center;
 
         .user-name {
           font-size: 14px;
           color: #333;
           line-height: 14px;
+          flex: 1;
         }
         .time {
           font-size: 10px;

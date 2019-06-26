@@ -1,10 +1,12 @@
 <template>
   <div class="discover">
-    <van-tabs v-model="activeTab" sticky swipeable animated class="tabs">
+    <!-- <van-tabs v-model="activeTab" sticky swipeable animated class="tabs">
       <van-tab v-for="(tab, index) in tabs" :title="tab.name" :key="index">
         <tab-content :id="tab.id" />
       </van-tab>
-    </van-tabs>
+    </van-tabs> -->
+    <van-nav-bar title="发现" />
+    <tab-content />
   </div>
 </template>
 

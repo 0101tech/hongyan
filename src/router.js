@@ -19,7 +19,7 @@ export default new Router({
       }
     },
     {
-      path: "/detail/:id",
+      path: "/detail/:id/:location",
       name: "detail",
       component: Detail,
       meta: {

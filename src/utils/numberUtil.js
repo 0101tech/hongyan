@@ -1,5 +1,5 @@
 export function formatCount(count) {
-  let result = "0";
+  let result = "";
   if (count) {
     if (count < 1000) {
       result = count;

@@ -1,84 +1,102 @@
 <template>
   <div class="tab-content">
     <van-pull-refresh v-model="isRefresh" @refresh="onRefresh">
-      <van-list
-        v-model="isLoading"
-        :finished="finished"
-        finished-text="我是有底线的"
-        @load="onLoad"
-      >
-        <div
-          v-for="item in poetryList"
-          :key="item.id"
-          class="item van-hairline--bottom"
-          @click="toDetail(item.id)"
+      <template v-if="poetryList.length > 0">
+        <van-list
+          v-model="isLoading"
+          :error.sync="isError"
+          error-text="请求失败，点击重新加载"
+          :finished="finished"
+          finished-text="我是有底线的"
+          @load="onLoad"
         >
-          <div class="author-info">
-            <div class="avatar">
-              <van-image src="https://img.yzcdn.cn/vant/cat.jpeg">
-                <template v-slot:error
-                  >加载失败</template
-                >
-              </van-image>
+          <div
+            v-for="item in poetryList"
+            :key="item.id"
+            class="item van-hairline--bottom"
+          >
+            <div class="author-info">
+              <div class="avatar">
+                <van-image :src="item.authorId | getAvatarUrl">
+                  <template v-slot:error>
+                    <img src="../assets/images/avatar.png" />
+                  </template>
+                </van-image>
+              </div>
+              <div class="author">
+                {{ item.authorName }}
+              </div>
+              <div class="dynasty">
+                {{ item.dynasty }}
+              </div>
             </div>
-            <div class="author">
-              {{ item.authorName }}
+            <div class="title-content" @click="toDetail(item.id, 'top')">
+              <div class="title van-ellipsis">{{ item.title }}</div>
+              <div class="content">{{ item.content }}</div>
             </div>
-            <div class="dynasty">
-              {{ item.dynasty }}
+            <div class="tips">
+              <span class="tips-item">
+                <van-icon name="like-o" />
+                <span class="count">
+                  {{ item.likeCount | formatCount }}
+                </span></span
+              >
+              <span class="tips-item" @click="toDetail(item.id, 'comment')">
+                <van-icon name="chat-o" />
+                <span class="count">
+                  {{ item.commentCount | formatCount }}
+                </span>
+              </span>
+              <span class="tips-item">
+                <van-icon name="star-o" />
+                <span class="count">
+                  {{ item.favoriteCount | formatCount }}
+                </span>
+              </span>
+              <span class="tips-item">
+                <van-icon name="eye-o" />
+                <span class="count">
+                  {{ item.readCount | formatCount }}
+                </span>
+              </span>
             </div>
           </div>
-          <div class="title-content">
-            <div class="title van-ellipsis">{{ item.title }}</div>
-            <div class="content">{{ item.content }}</div>
-          </div>
-          <div class="tips">
-            <span class="tips-item">
-              <van-icon name="like-o" />
-              <span class="count">
-                {{ item.likeCount | formatCount }}
-              </span></span
-            >
-            <span class="tips-item">
-              <van-icon name="chat-o" />
-              <span class="count">
-                {{ item.commentCount | formatCount }}
-              </span>
-            </span>
-            <span class="tips-item">
-              <van-icon name="star-o" />
-              <span class="count">
-                {{ item.favoriteCount | formatCount }}
-              </span>
-            </span>
-            <span class="tips-item">
-              <van-icon name="eye-o" />
-              <span class="count">
-                {{ item.readCount | formatCount }}
-              </span>
-            </span>
-          </div>
-        </div>
-      </van-list>
+        </van-list>
+      </template>
+      <div class="empty" v-else>
+        空空如也
+      </div>
     </van-pull-refresh>
   </div>
 </template>
 
 <script>
+import {imageHost} from "../utils/const.js";
+
 export default {
-  props: ["id"],
   data() {
     return {
       isRefresh: false,
       isLoading: false,
+      isError: false,
       finished: false,
       pageNum: 0,
       poetryList: []
     };
   },
+  props: ["keyword"],
+  filters: {
+    getAvatarUrl(authorId) {
+      return [imageHost, authorId, ".jpg"].join("");
+    }
+  },
   methods: {
     async query() {
-      this.$get("/api/poetry", {pageNum: this.pageNum, pageSize: 20}).then(response => {
+      const param = {pageNum: this.pageNum, pageSize: 20};
+      if (this.keyword) {
+        param.keyword = this.keyword;
+      }
+      this.$get("/api/poetry", param).then(response => {
         const result = response.result;
         if (result.list.length > 0) {
           if (this.pageNum == 1) {
@@ -97,6 +115,7 @@ export default {
         this.isLoading = false;
       }).catch(e => {
         console.log(e);
+        this.isError = true;
         this.pageNum--;
       });
     },
@@ -108,11 +127,12 @@ export default {
       this.pageNum = 1;
       this.query();
     },
-    toDetail(id) {
-      this.$router.push("/detail/" + id);
+    toDetail(id, location) {
+      this.$router.push(["/detail/", id, "/", location].join(""));
     }
   },
   mounted() {
+    this.query();
   }
 };
 </script>
@@ -141,6 +161,14 @@ export default {
         /deep/ img {
           object-fit: cover;
           border-radius: 50%;
+        }
+        /deep/ .van-image__error {
+          background-color: transparent;
+
+          img {
+            width: 100%;
+            height: 100%;
+          }
         }
       }
       .author {
@@ -190,6 +218,17 @@ export default {
         }
       }
     }
+  }
+
+  .empty {
+    position: fixed;
+    top: 46px;
+    bottom: 46px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #888;
   }
 }
 </style>
