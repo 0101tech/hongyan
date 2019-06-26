@@ -8,7 +8,14 @@
 </template>
 
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      value: "",
+      loading: true
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped></style>

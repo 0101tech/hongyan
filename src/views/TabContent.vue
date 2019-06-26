@@ -1,8 +1,8 @@
 <template>
   <div class="tab-content">
-    <van-pull-refresh v-model="loading" @refresh="onRefresh">
+    <van-pull-refresh v-model="isRefresh" @refresh="onRefresh">
       <van-list
-        v-model="loading"
+        v-model="isLoading"
         :finished="finished"
         finished-text="我是有底线的"
         @load="onLoad"
@@ -69,43 +69,50 @@ export default {
   props: ["id"],
   data() {
     return {
-      loading: true,
+      isRefresh: false,
+      isLoading: false,
       finished: false,
+      pageNum: 0,
       poetryList: []
     };
   },
   methods: {
-    onLoad() {
-      this.loading = true;
-      setTimeout(() => {
-        this.poetryList = [];
-        for (var i = 0; i < 20; i++) {
-          this.poetryList.push({
-            id: i + 1,
-            authorId: i + 1,
-            authorName: "李白",
-            title: "将进酒",
-            content:
-              "君不见，黄河之水天上来，奔流到海不复回。君不见，高堂明镜悲白发，朝如青丝暮成雪！人生得意须尽欢，莫使金樽空对月。天生我材必有用，千金散尽还复来。烹羊宰牛且为乐，会须一饮三百杯。岑夫子，丹丘生，将进酒，杯莫停。与君歌一曲，请君为我倾耳听。钟鼓馔玉不足贵，但愿长醉不复醒。古来圣贤皆寂寞，惟有饮者留其名。陈王昔时宴平乐，斗酒十千恣欢谑。主人何为言少钱，径须沽取对君酌。五花马、千金裘，呼儿将出换美酒，与尔同销万古愁！",
-            dynasty: "唐",
-            readCount: 100,
-            likeCount: 100,
-            commentCount: 100,
-            favoriteCount: 100
-          });
+    async query() {
+      this.$get("/api/poetry", {pageNum: this.pageNum, pageSize: 20}).then(response => {
+        const result = response.result;
+        if (result.list.length > 0) {
+          if (this.pageNum == 1) {
+            this.poetryList = [];
+          }
+          this.poetryList = this.poetryList.concat(result.list);
+          if (result.pages <= this.pageNum) {
+            this.finished = true;
+          } else {
+            this.finished = false;
+          }
+        } else {
+          this.finished = true;
         }
-        this.loading = false;
-      }, 1000);
+        this.isRefresh = false;
+        this.isLoading = false;
+      }).catch(e => {
+        console.log(e);
+        this.pageNum--;
+      });
+    },
+    onLoad() {
+      this.pageNum++;
+      this.query();
     },
     onRefresh() {
-      this.onLoad();
+      this.pageNum = 1;
+      this.query();
     },
     toDetail(id) {
       this.$router.push("/detail/" + id);
     }
   },
   mounted() {
-    this.onLoad();
   }
 };
 </script>

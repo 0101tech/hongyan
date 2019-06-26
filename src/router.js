@@ -14,7 +14,8 @@ export default new Router({
       name: "home",
       component: Home,
       meta: {
-        title: "鸿雁"
+        title: "鸿雁",
+        keepAlive: true
       }
     },
     {

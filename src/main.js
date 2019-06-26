@@ -6,6 +6,7 @@ import router from "./router";
 import store from "./store";
 import { formatCount } from "./utils/numberUtil";
 import { timestampFormat } from "./utils/moment";
+import {get,post,del,put} from './utils/httpClient'
 
 Vue.config.productionTip = false;
 
@@ -17,6 +18,11 @@ Vue.filter("formatCount", function(value) {
 Vue.filter("timestampFormat", function(value) {
   return timestampFormat(value);
 });
+
+Vue.prototype.$get = get;
+Vue.prototype.$post = post;
+Vue.prototype.$del = del;
+Vue.prototype.$put = put;
 
 router.beforeEach((to, from, next) => {
   /*路由发生改变修改页面的title */
