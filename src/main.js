@@ -6,7 +6,7 @@ import router from "./router";
 import store from "./store";
 import { formatCount } from "./utils/numberUtil";
 import { timestampFormat } from "./utils/moment";
-import {get,post,del,put} from './utils/httpClient'
+import { get, post, del, put } from "./utils/httpClient";
 
 Vue.config.productionTip = false;
 

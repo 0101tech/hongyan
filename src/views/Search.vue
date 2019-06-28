@@ -1,6 +1,10 @@
 <template>
   <div class="search">
-    <van-search placeholder="请输入搜索关键词" v-model="value" @search="onSearch" />
+    <van-search
+      placeholder="请输入搜索关键词"
+      v-model="value"
+      @search="onSearch"
+    />
     <tab-content v-if="keyword" :keyword="keyword" />
   </div>
 </template>
@@ -13,7 +17,7 @@ export default {
     return {
       value: "",
       keyword: null
-    }
+    };
   },
   components: {
     TabContent

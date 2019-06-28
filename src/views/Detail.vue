@@ -28,8 +28,9 @@
       <div class="cover"></div>
     </div>
     <comment
+      v-if="poetry.id"
       id="comment"
-      :like-count="poetry.likeCount"
+      :praise-count="poetry.praiseCount"
       :comment-count="poetry.commentCount"
       :favorite-count="poetry.favoriteCount"
       :read-count="poetry.readCount"
@@ -57,17 +58,19 @@ export default {
     getDetail() {
       this.$toast.loading({
         mask: true,
-        message: '加载中...',
+        message: "加载中...",
         duration: 0
       });
-      this.$get("/api/poetry/" + this.$route.params.id).then(response => {
-        this.poetry = response.result;
-        this.poetry.content = marked(this.poetry.content);
-        this.$toast.clear();
-      }).catch(e => {
-        console.log(e);
-        this.$toast.clear();
-      });
+      this.$get("/api/poetry/" + this.$route.params.id)
+        .then(response => {
+          this.poetry = response.result;
+          this.poetry.content = marked(this.poetry.content);
+          this.$toast.clear();
+        })
+        .catch(e => {
+          console.log(e);
+          this.$toast.clear();
+        });
     },
     back() {
       this.$toast("返回");
@@ -84,7 +87,6 @@ export default {
   created() {
     const location = this.$route.params.location;
     if (location === "top") {
-      console.log(document.documentElement.scrollTop);
       document.documentElement.scrollTop = 0;
     }
   },
@@ -122,16 +124,18 @@ export default {
         font-size: 16px;
         line-height: 32px;
         font-weight: 500;
+        letter-spacing: 4px;
       }
       .author {
-        font-size: 12px;
+        font-size: 14px;
         line-height: 24px;
         color: #888;
       }
       .content {
-        font-size: 14px;
+        font-size: 16px;
         line-height: 28px;
         font-weight: 600;
+        letter-spacing: 2px;
       }
     }
   }

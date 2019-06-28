@@ -11,7 +11,7 @@
           @load="onLoad"
         >
           <div
-            v-for="item in poetryList"
+            v-for="(item, index) in poetryList"
             :key="item.id"
             class="item van-hairline--bottom"
           >
@@ -35,19 +35,19 @@
               <div class="content">{{ item.content }}</div>
             </div>
             <div class="tips">
-              <span class="tips-item">
+              <span class="tips-item" @click="praise(item.id, index)">
                 <van-icon name="like-o" />
                 <span class="count">
-                  {{ item.likeCount | formatCount }}
-                </span></span
-              >
+                  {{ item.praiseCount | formatCount }}
+                </span>
+              </span>
               <span class="tips-item" @click="toDetail(item.id, 'comment')">
                 <van-icon name="chat-o" />
                 <span class="count">
                   {{ item.commentCount | formatCount }}
                 </span>
               </span>
-              <span class="tips-item">
+              <span class="tips-item" @click="favorite(item.id, index)">
                 <van-icon name="star-o" />
                 <span class="count">
                   {{ item.favoriteCount | formatCount }}
@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import {imageHost} from "../utils/const.js";
+import { imageHost } from "../utils/const.js";
 
 export default {
   data() {
@@ -92,32 +92,40 @@ export default {
   },
   methods: {
     async query() {
-      const param = {pageNum: this.pageNum, pageSize: 20};
+      const param = { pageNum: this.pageNum, pageSize: 20 };
       if (this.keyword) {
         param.keyword = this.keyword;
+        this.$toast.loading({
+          mask: true,
+          message: "加载中...",
+          duration: 0
+        });
       }
-      this.$get("/api/poetry", param).then(response => {
-        const result = response.result;
-        if (result.list.length > 0) {
-          if (this.pageNum == 1) {
-            this.poetryList = [];
-          }
-          this.poetryList = this.poetryList.concat(result.list);
-          if (result.pages <= this.pageNum) {
-            this.finished = true;
+      this.$get("/api/poetry", param)
+        .then(response => {
+          const result = response.result;
+          if (result.list.length > 0) {
+            if (this.pageNum == 1) {
+              this.poetryList = [];
+            }
+            this.poetryList = this.poetryList.concat(result.list);
+            if (result.pages <= this.pageNum) {
+              this.finished = true;
+            } else {
+              this.finished = false;
+            }
           } else {
-            this.finished = false;
+            this.finished = true;
           }
-        } else {
-          this.finished = true;
-        }
-        this.isRefresh = false;
-        this.isLoading = false;
-      }).catch(e => {
-        console.log(e);
-        this.isError = true;
-        this.pageNum--;
-      });
+          this.isRefresh = false;
+          this.isLoading = false;
+          this.$toast.clear();
+        })
+        .catch(e => {
+          console.log(e);
+          this.isError = true;
+          this.pageNum--;
+        });
     },
     onLoad() {
       this.pageNum++;
@@ -129,6 +137,34 @@ export default {
     },
     toDetail(id, location) {
       this.$router.push(["/detail/", id, "/", location].join(""));
+    },
+    praise(id, index) {
+      this.$post("/api/praise/1/" + id)
+        .then(response => {
+          if (response.success) {
+            this.poetryList[index].praiseCount++;
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
+    },
+    favorite(id, index) {
+      const poetry = this.poetryList[index];
+      const param = {
+        poetryTitle: poetry.title,
+        authorId: poetry.authorId,
+        authorName: poetry.authorName
+      };
+      this.$post("/api/favorite/poetry/" + id, param)
+        .then(response => {
+          if (response.success) {
+            this.poetryList[index].favoriteCount++;
+          }
+        })
+        .catch(e => {
+          console.log(e);
+        });
     }
   },
   mounted() {
