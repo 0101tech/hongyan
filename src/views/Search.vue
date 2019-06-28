@@ -24,7 +24,7 @@
         >{{ item }}</van-tag
       >
     </div>
-    <div class="hot">
+    <div v-if="!keyword" class="hot">
       <div class="title">
         热搜榜
       </div>
