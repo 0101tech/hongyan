@@ -5,17 +5,12 @@
       left-text="返回"
       left-arrow
       fixed
+      :z-index="4"
       @click-left="back"
-      @click-right="more"
+      @click-right="share"
     >
-      <van-icon name="ellipsis" slot="right" />
+      <van-icon name="share" slot="right" />
     </van-nav-bar>
-    <van-action-sheet
-      v-model="showMore"
-      :actions="moreActions"
-      close-on-click-action
-      @select="onSelect"
-    />
 
     <div class="main">
       <div class="poetry">
@@ -29,12 +24,12 @@
     </div>
     <comment
       v-if="poetry.id"
-      id="comment"
       :praise-count="poetry.praiseCount"
       :comment-count="poetry.commentCount"
       :favorite-count="poetry.favoriteCount"
       :read-count="poetry.readCount"
       :poetry-id="poetry.id"
+      id="comment"
     />
   </div>
 </template>
@@ -46,9 +41,7 @@ import Comment from "@/components/Comment";
 export default {
   data() {
     return {
-      poetry: {},
-      showMore: false,
-      moreActions: [{ name: "分享" }, { name: "收藏" }]
+      poetry: {}
     };
   },
   components: {
@@ -66,6 +59,17 @@ export default {
           this.poetry = response.result;
           this.poetry.content = marked(this.poetry.content);
           this.$toast.clear();
+
+          setTimeout(() => {
+            const location = this.$route.params.location;
+            if (this.poetry.commentCount > 0 && location === "comment") {
+              document
+                .getElementById("comment")
+                .scrollIntoView({ behavior: "smooth" });
+            } else {
+              document.documentElement.scrollTop = 0;
+            }
+          }, 100);
         })
         .catch(e => {
           console.log(e);
@@ -76,12 +80,8 @@ export default {
       this.$toast("返回");
       this.$router.go(-1);
     },
-    more() {
-      this.$toast("更多");
-      this.showMore = true;
-    },
-    onSelect() {
-      this.$toast("选择");
+    share() {
+      this.$toast("分享");
     }
   },
   created() {
@@ -91,10 +91,6 @@ export default {
     }
   },
   mounted() {
-    const location = this.$route.params.location;
-    if (location === "comment") {
-      document.getElementById("comment").scrollIntoView();
-    }
     marked.setOptions({
       renderer: new marked.Renderer(),
       breaks: true
@@ -111,6 +107,9 @@ export default {
     display: flex;
     align-items: center;
     margin-top: 46px;
+    position: relative;
+    z-index: 3;
+    background: #fff;
 
     .poetry {
       width: 100%;

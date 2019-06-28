@@ -36,7 +36,8 @@
             </div>
             <div class="tips">
               <span class="tips-item" @click="praise(item.id, index)">
-                <van-icon name="like-o" />
+                <van-icon v-if="item.praise" name="like" />
+                <van-icon v-else name="like-o" />
                 <span class="count">
                   {{ item.praiseCount | formatCount }}
                 </span>
@@ -48,16 +49,14 @@
                 </span>
               </span>
               <span class="tips-item" @click="favorite(item.id, index)">
-                <van-icon name="star-o" />
+                <van-icon v-if="item.favorite" name="star" />
+                <van-icon v-else name="star-o" />
                 <span class="count">
                   {{ item.favoriteCount | formatCount }}
                 </span>
               </span>
-              <span class="tips-item">
-                <van-icon name="eye-o" />
-                <span class="count">
-                  {{ item.readCount | formatCount }}
-                </span>
+              <span class="tips-item" @click="share(item.id, index)">
+                <van-icon name="share" />
               </span>
             </div>
           </div>
@@ -93,7 +92,11 @@ export default {
   methods: {
     async query() {
       const param = { pageNum: this.pageNum, pageSize: 20 };
-      if (this.keyword) {
+      if (
+        this.keyword ||
+        this.poetryList == null ||
+        this.poetryList.length === 0
+      ) {
         param.keyword = this.keyword;
         this.$toast.loading({
           mask: true,
@@ -104,7 +107,7 @@ export default {
       this.$get("/api/poetry", param)
         .then(response => {
           const result = response.result;
-          if (result.list.length > 0) {
+          if (result.list && result.list.length > 0) {
             if (this.pageNum == 1) {
               this.poetryList = [];
             }
@@ -139,10 +142,15 @@ export default {
       this.$router.push(["/detail/", id, "/", location].join(""));
     },
     praise(id, index) {
+      const poetry = this.poetryList[index];
+      if (poetry.praise) {
+        return;
+      }
       this.$post("/api/praise/1/" + id)
         .then(response => {
           if (response.success) {
-            this.poetryList[index].praiseCount++;
+            poetry.praiseCount++;
+            poetry.praise = true;
           }
         })
         .catch(e => {
@@ -151,6 +159,9 @@ export default {
     },
     favorite(id, index) {
       const poetry = this.poetryList[index];
+      if (poetry.favorite) {
+        return;
+      }
       const param = {
         poetryTitle: poetry.title,
         authorId: poetry.authorId,
@@ -159,12 +170,17 @@ export default {
       this.$post("/api/favorite/poetry/" + id, param)
         .then(response => {
           if (response.success) {
-            this.poetryList[index].favoriteCount++;
+            poetry.favoriteCount++;
+            poetry.favorite = true;
           }
         })
         .catch(e => {
           console.log(e);
         });
+    },
+    share(id, index) {
+      console.log(id, index);
+      this.$toast("分享");
     }
   },
   mounted() {

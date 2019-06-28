@@ -16,7 +16,7 @@
     <van-cell title="消息" icon="envelop-o" is-link value="666" />
     <van-cell title="收藏" icon="star-o" is-link />
     <van-cell title="反馈" icon="smile-comment-o" is-link />
-    <van-cell title="退出" icon="close" is-link />
+    <van-cell title="退出" icon="close" is-link to="/login" />
   </div>
 </template>
 
